@@ -1,0 +1,50 @@
+* {
+  list-style: none;
+  font-size: 16px;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  text-decoration: none;
+}
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+header {
+  background-color: darkblue;
+  color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+header a {
+  color: white;
+  font-size: 25px;
+}
+
+main {
+  display: flex;
+}
+
+main > * {
+  padding: 20px;
+  margin: 20px;
+  border: 1px solid black;
+}
+
+aside {
+  flex: 1;
+}
+
+section {
+  flex: 3;
+}
+
+.note {
+  background-color: #ccc;
+  padding: 20px;
+  margin: 20px;
+}
