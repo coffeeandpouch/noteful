@@ -10,6 +10,8 @@ export default function Note(props) {
         <Link to={`/notes/${n.id}`}>{n.name}</Link>
       </h3>
       <p>{new Date(n.modified).toDateString()}</p>
+      {<button className="del">Delete Note</button>}
+
       {props.match && props.match.params.noteid && <p>{n.content}</p>}
     </div>
   );
