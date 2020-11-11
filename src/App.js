@@ -1,7 +1,12 @@
 import React from "react";
 import { Link, Route } from "react-router-dom";
 
+import Notes from "./components/Notes/Notes";
 import Note from "./components/Note/Note";
+import AddFolder from "./components/AddFolder/AddFolder";
+import AddNote from "./components/AddNote/AddNote;";
+
+import Context from "./Context";
 
 import "./App.css";
 
@@ -135,54 +140,56 @@ export default class App extends React.Component {
           "Veritatis porro minima perspiciatis. Repellat veniam quo iste ut. Iusto voluptas quae quibusdam. Odit neque iusto cupiditate iste quam. Fuga itaque aut praesentium ullam saepe ut et vero.\n \rQuisquam doloremque molestiae. Enim rerum dolorem et velit itaque magnam laborum. Aut officiis porro.\n \rQuae eum eaque error. Sed itaque ipsam nam provident aut voluptate. Perferendis repudiandae sequi laudantium est est animi eum. Unde alias et doloribus est hic et. Sed distinctio incidunt maiores aut voluptatibus et omnis mollitia fugit.",
       },
     ],
+    addFolder: (e, history) => {
+      e.preventDefault();
+      this.setState(
+        {
+          folders: [
+            ...this.state.folders,
+            {
+              id: "" + this.state.folders.length + 1 + "",
+              name: e.target.folder_name.value,
+            },
+          ],
+        },
+        () => {
+          e.target.reset();
+          history.push("/");
+        }
+      );
+    },
   };
 
   render() {
     return (
-      <div className="App">
-        <header>
-          <h1>
-            <Link to="/">Noteful</Link>
-          </h1>
-        </header>
-        <main>
-          <aside>
-            <ul>
-              {this.state.folders.map((f) => (
-                <li key={f.id}>
-                  <Link to={`/folders/${f.id}`}>{f.name}</Link>
-                </li>
-              ))}
-            </ul>
-          </aside>
-          <section>
-            <Route
-              exact
-              path="/"
-              render={() =>
-                this.state.notes.map((n) => <Note key={n.id} n={n} />)
-              }
-            />
-            <Route
-              path="/folders/:folderid"
-              render={(rprops) =>
-                this.state.notes
-                  .filter((n) => n.folderId === rprops.match.params.folderid)
-                  .map((n) => <Note key={n.id} n={n} />)
-              }
-            />
-            <Route
-              path="/notes/:noteid"
-              render={(rprops) => {
-                const n = this.state.notes.find(
-                  (n) => n.id === rprops.match.params.noteid
-                );
-                return <Note {...rprops} n={n} />;
-              }}
-            />
-          </section>
-        </main>
-      </div>
+      <Context.Provider value={this.state}>
+        <div className="App">
+          <header>
+            <h1>
+              <Link to="/">Noteful</Link>
+            </h1>
+          </header>
+          <main>
+            <aside>
+              <ul>
+                {this.state.folders.map((f) => (
+                  <li key={f.id}>
+                    <Link to={`/folders/${f.id}`}>{f.name}</Link>
+                  </li>
+                ))}
+              </ul>
+              <Link to="/addfolder">Add Folder</Link>
+            </aside>
+            <section>
+              <Route exact path="/" component={Notes} />
+              <Route path="/folders/:folderid" component={Notes} />
+              <Route path="/notes/:noteid" component={Note} />
+              <Route path="/addfolder" component={AddFolder} />
+              <Route path="/addnote" component={AddNote} />
+            </section>
+          </main>
+        </div>
+      </Context.Provider>
     );
   }
 }
