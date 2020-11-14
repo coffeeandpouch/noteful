@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import Context from "../../Context";
 
@@ -9,8 +9,8 @@ export default function Note(props) {
   return (
     <Context.Consumer>
       {(value) => {
-        const n = value.notes.find((n) => n.id === match.params.noteid);
-        return (
+        const n = value.notes.find((n) => n.id === match.params.noteid) || {};
+        return n.modified ? (
           <div className="note">
             <h3>
               <Link to={`/notes/${n.id}`}>{n.name}</Link>
@@ -20,6 +20,8 @@ export default function Note(props) {
 
             {props.location && <p>{n.content}</p>}
           </div>
+        ) : (
+          <Redirect to="/" />
         );
       }}
     </Context.Consumer>
