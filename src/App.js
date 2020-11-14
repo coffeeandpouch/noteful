@@ -4,9 +4,11 @@ import { Link, Route } from "react-router-dom";
 import Notes from "./components/Notes/Notes";
 import Note from "./components/Note/Note";
 import AddFolder from "./components/AddFolder/AddFolder";
-import AddNote from "./components/AddNote/AddNote;";
+import AddNote from "./components/AddNote/AddNote";
 
 import Context from "./Context";
+
+import { API_ENDPOINT } from "./config";
 
 import "./App.css";
 
@@ -26,6 +28,7 @@ export default class App extends React.Component {
         name: "Spangley",
       },
     ],
+
     notes: [
       {
         id: "cbc787a0-ffaf-11e8-8eb2-f2801f1b9fd1",
@@ -142,13 +145,40 @@ export default class App extends React.Component {
     ],
     addFolder: (e, history) => {
       e.preventDefault();
+      const newFolder = {
+        name: e.target.folder_name.value,
+      };
+
+      fetch(`${API_ENDPOINT}/folders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newFolder),
+      })
+        .then((res) => res.json())
+        .then((newFolder) => {
+          this.setState(
+            {
+              folders: [...this.state.folders, newFolder],
+            },
+            () => {
+              e.target.reset();
+              history.push("/");
+            }
+          );
+        });
+    },
+    addNote: (e, history) => {
+      e.preventDefault();
       this.setState(
         {
-          folders: [
-            ...this.state.folders,
+          notes: [
+            ...this.state.notes,
             {
-              id: "" + this.state.folders.length + 1 + "",
-              name: e.target.folder_name.value,
+              id: "" + this.state.notes.length + 1 + "",
+              name: e.target.note_name.value,
+              modified: new Date(),
             },
           ],
         },
@@ -159,6 +189,43 @@ export default class App extends React.Component {
       );
     },
   };
+
+  componentDidMount() {
+    fetch(`${API_ENDPOINT}/notes`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Something went wrong please try again later.");
+        }
+        return response.json();
+      })
+      .then((notes) => {
+        this.setState({
+          notes,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          error: error.message,
+        });
+      });
+    fetch(`${API_ENDPOINT}/folders`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Something went wrong please try again later.");
+        }
+        return response.json();
+      })
+      .then((folders) => {
+        this.setState({
+          folders,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          error: error.message,
+        });
+      });
+  }
 
   render() {
     return (
@@ -186,6 +253,7 @@ export default class App extends React.Component {
               <Route path="/notes/:noteid" component={Note} />
               <Route path="/addfolder" component={AddFolder} />
               <Route path="/addnote" component={AddNote} />
+              <Link to="/addnote">Add Note</Link>
             </section>
           </main>
         </div>
