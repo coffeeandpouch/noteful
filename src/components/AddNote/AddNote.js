@@ -16,6 +16,13 @@ export default function AddNote(props) {
               aria-label="Note Name"
               required
             />
+
+            <input
+              type="text"
+              placeholder="Content"
+              name="note_content"
+              aria-label="Note Content"
+            />
             <input type="submit" value="Add Note" />
           </form>
         );
