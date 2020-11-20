@@ -23,6 +23,12 @@ export default function AddNote(props) {
               name="note_content"
               aria-label="Note Content"
             />
+
+            <select>
+              <option key="folderOption[0]">
+                `${this.state.folders[0].id}
+              </option>
+            </select>
             <input type="submit" value="Add Note" />
           </form>
         );
