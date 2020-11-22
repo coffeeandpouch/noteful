@@ -9,7 +9,7 @@ export default class ErrorPage extends React.Component {
   }
   static getDerivedStateFromError(error) {
     console.error(error);
-    this.setState({ error });
+    return { error };
   }
 
   render() {

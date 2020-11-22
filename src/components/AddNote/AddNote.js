@@ -7,6 +7,7 @@ export default function AddNote(props) {
   return (
     <Context.Consumer>
       {(value) => {
+        const { folders = [] } = value || [];
         return (
           <form onSubmit={(e) => value.addNote(e, history)}>
             <input
@@ -24,12 +25,17 @@ export default function AddNote(props) {
               aria-label="Note Content"
             />
 
-            <select>
-              <option key="folderOption[0]">
-                `${this.state.folders[0].id}
-              </option>
-            </select>
-            <input type="submit" value="Add Note" />
+            <div className="fmenu">
+              <select name="folderId">
+                {folders.map((folder) => (
+                  <option key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <input type="submit" />
           </form>
         );
       }}

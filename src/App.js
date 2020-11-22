@@ -9,7 +9,7 @@ import AddNote from "./components/AddNote/AddNote";
 import Context from "./Context";
 
 import { API_ENDPOINT } from "./config";
-
+import ErrorPage from "./components/ErrorBoundary/ErrorPage";
 import "./App.css";
 
 export default class App extends React.Component {
@@ -36,11 +36,17 @@ export default class App extends React.Component {
             {
               folders: [...this.state.folders, newFolder],
             },
+
             () => {
               e.target.reset();
               history.push("/");
             }
           );
+        })
+        .catch((error) => {
+          this.setState({
+            error: error.message,
+          });
         });
     },
     addNote: (e, history) => {
@@ -49,7 +55,7 @@ export default class App extends React.Component {
       let newNote = {
         name: e.target.note_name.value,
         modified: new Date(),
-        folderId: `${this.state.folders[0].id}`,
+        folderId: e.target.folderId.value,
         content: e.target.note_content.value,
       };
       fetch(`${API_ENDPOINT}/notes`, {
@@ -58,31 +64,45 @@ export default class App extends React.Component {
         body: JSON.stringify(newNote),
       })
         .then((res) => res.json())
+
         .then((newNote) => {
           this.setState(
             {
               notes: [...this.state.notes, newNote],
             },
+
             () => {
               e.target.reset();
               history.push("/");
             }
           );
+        })
+        .catch((error) => {
+          this.setState({
+            error: error.message,
+          });
         });
     },
     deleteNote: (id, history) => {
       fetch(`${API_ENDPOINT}/notes/${id}`, {
         method: "DELETE",
-      }).then((res) => {
-        this.setState(
-          {
-            notes: this.state.notes.filter((n) => n.id !== id),
-          },
-          () => {
-            history.push("/");
-          }
-        );
-      });
+      })
+        .then((res) => {
+          this.setState(
+            {
+              notes: this.state.notes.filter((n) => n.id !== id),
+            },
+
+            () => {
+              history.push("/");
+            }
+          );
+        })
+        .catch((error) => {
+          this.setState({
+            error: error.message,
+          });
+        });
     },
   };
 
@@ -128,31 +148,37 @@ export default class App extends React.Component {
     return (
       <Context.Provider value={this.state}>
         <div className="App">
-          <header>
-            <h1>
-              <Link to="/">Noteful</Link>
-            </h1>
-          </header>
-          <main>
-            <aside>
-              <ul>
-                {this.state.folders.map((f) => (
-                  <li key={f.id}>
-                    <Link to={`/folders/${f.id}`}>{f.name}</Link>
-                  </li>
-                ))}
-              </ul>
-              <Link to="/addfolder">Add Folder</Link>
-            </aside>
-            <section>
-              <Route exact path="/" component={Notes} />
-              <Route path="/folders/:folderid" component={Notes} />
-              <Route path="/notes/:noteid" component={Note} />
-              <Route path="/addfolder" component={AddFolder} />
-              <Route path="/addnote" component={AddNote} />
-              <Link to="/addnote">Add Note</Link>
-            </section>
-          </main>
+          <ErrorPage>
+            <header>
+              <h1>
+                <Link to="/">Noteful</Link>
+              </h1>
+            </header>
+            <main>
+              <aside>
+                <ul>
+                  {this.state.folders.map((f) => (
+                    <li key={f.id}>
+                      <Link to={`/folders/${f.id}`}>{f.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/addfolder">
+                  <button>Add Folder</button>
+                </Link>
+              </aside>
+              <section>
+                <Route exact path="/" component={Notes} />
+                <Route path="/folders/:folderid" component={Notes} />
+                <Route path="/notes/:noteid" component={Note} />
+                <Route path="/addfolder" component={AddFolder} />
+                <Route path="/addnote" component={AddNote} />
+                <Link to="/addnote">
+                  <button>Add Note</button>
+                </Link>
+              </section>
+            </main>
+          </ErrorPage>
         </div>
       </Context.Provider>
     );
